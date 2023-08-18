@@ -61,16 +61,22 @@ void eval(int *x, char *buf)
     }
 }
 
-void manage_game(int p1, int p2)
+void manage_game(std::vector<int> players)
 {
-    send(p1, "0", 1, 0);
-    send(p2, "0", 1, 0);
+    send(players[0], "0", 1, 0);
+    send(players[1], "0", 1, 0);
     char *buf = (char *)calloc(3, sizeof(char));
     int x = 0;
     int y = 0;
+    int index1 = 0;
+    int index2 = 1;
+    int p1;
+    int p2;
 
     while (true)
     {
+        p1 = players[index1];
+        p2 = players[index2];
         send(p1, "2", 1, 0);
         recv(p1, buf, 2, 0);
 
@@ -94,8 +100,17 @@ void manage_game(int p1, int p2)
             }
             break;
         }
+        if (index1 == 0)
+        {
+            index1 = 1;
+            index2 = 0;
+        }
+        else if(index1 == 1)
+        {
+            index1 = 0;
+            index2 = 1;
+        }
     }
-
 }
 
 void manage_server(int socket)
@@ -107,7 +122,8 @@ void manage_server(int socket)
     else
     {
         index += 2;
-        std::thread game(manage_game, clients[index-2], clients[index-1]);
+        std::vector<int> players = {clients[index-2], clients[index-1]};
+        std::thread game(manage_game, players);
         game.detach();
     }
 }
