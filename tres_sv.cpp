@@ -4,6 +4,7 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+#include <cstring>
 
 int PORT = 5050;
 const std::string SERVER_IP = "0.0.0.0";
@@ -12,7 +13,7 @@ std::vector<int> clients;
 
 std::vector<std::vector<int>> tabla;
 
-int index = 0;
+int in = 0;
 
 int check_win(std::vector<std::vector<int>> tabla)
 {
@@ -68,21 +69,26 @@ void manage_game(std::vector<int> players)
     char *buf = (char *)calloc(3, sizeof(char));
     int x = 0;
     int y = 0;
-    int index1 = 0;
-    int index2 = 1;
+    int in1 = 0;
+    int in2 = 1;
     int p1;
     int p2;
 
+    send(players[0], "1", 1, 0);
+    send(players[1], "2", 1, 0);
+
     while (true)
     {
-        p1 = players[index1];
-        p2 = players[index2];
+        p1 = players[in1];
+        p2 = players[in2];
         send(p1, "2", 1, 0);
+        send(p2, "6", 1, 0);
         recv(p1, buf, 2, 0);
 
         eval(&x, buf);
         y = buf[1] - 48;
         tabla[y][x] = 1;
+        //memset(buf, 0, 3);
         send(p2, buf, 2, 0);
         int wcondition = check_win(tabla);
         if ( wcondition > 0)
@@ -100,15 +106,15 @@ void manage_game(std::vector<int> players)
             }
             break;
         }
-        if (index1 == 0)
+        if (in1 == 0)
         {
-            index1 = 1;
-            index2 = 0;
+            in1 = 1;
+            in2 = 0;
         }
-        else if(index1 == 1)
+        else if(in1 == 1)
         {
-            index1 = 0;
-            index2 = 1;
+            in1 = 0;
+            in2 = 1;
         }
     }
 }
@@ -121,8 +127,8 @@ void manage_server(int socket)
     }
     else
     {
-        index += 2;
-        std::vector<int> players = {clients[index-2], clients[index-1]};
+        in += 2;
+        std::vector<int> players = {clients[in-2], clients[in-1]};
         std::thread game(manage_game, players);
         game.detach();
     }

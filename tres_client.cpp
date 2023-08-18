@@ -57,7 +57,7 @@ void print_line(std::vector<int> header, std::vector<int> max)
     {
         std::cout << "+";
         std::cout << "-";
-        for (unsigned int x = 0; x < max[i]; x++)
+        for (int x = 0; x < max[i]; x++)
             std::cout << "-";
         std::cout << "-";
     }
@@ -97,7 +97,7 @@ void print_words(std::vector<int> header, std::vector<int> max)
     for (unsigned int i = 0; i < header.size(); i++)
     {
         std::cout << "|" << " " << header[i];
-        for (unsigned int x = 0; x < (max[i] - (2 - 1)); x++)
+        for (int x = 0; x < (max[i] - (2 - 1)); x++)
             std::cout << " ";
     }
     std::cout << "|";
@@ -191,7 +191,7 @@ int main()
     int sock;
     struct sockaddr_in address;
     std::vector<std::vector<int>> tabla;
-    bool playing = true;
+    //bool playing = true;
     int x = 0;
     int y = 0;
     char *buf = (char *)calloc(3, sizeof(char));
@@ -220,15 +220,22 @@ int main()
     }
     if (ft_atoi(buf) == 0)
     {
+        int player = 0;
         std::cout << "Encontraste partida!" << std::endl;
         for(int i = 0; i < 3; i++)
         {
             tabla.push_back({0, 0, 0});
         }
+        memset(buf, 0, 3);
+        recv(sock, buf, 1, 0);
+        player = ft_atoi(buf);
+        memset(buf, 0, 3);
         while (true)
         {
             print_tabla(tabla);
+            memset(buf, 0, 3);
             recv(sock, buf, 1, 0);
+            std::cout << buf << std::endl;
             if (ft_atoi(buf) == 2)
             {
                 x = 0;
@@ -256,7 +263,42 @@ int main()
                     break;
                 }
                 y = buf[1] - 48;
-                tabla[y][x] = 1;
+                tabla[y][x] = player;
+            }
+            if(ft_atoi(buf) == 6)
+            {
+                memset(buf, 0, 3);
+                recv(sock, buf, 2, 0);
+                switch (buf[0])
+                {
+                case 'a':
+                    x = 0;
+                    break;
+                
+                case 'b':
+                    x = 1;
+                    break;
+                
+                case 'c':
+                    x = 2;
+                    break;
+                
+                default:
+                    break;
+                }
+                y = buf[1] - 48;
+                switch (player)
+                {
+                case 1:
+                    tabla[y][x] = player + 1;
+                    break;
+                case 2:
+                    tabla[y][x] = player - 1;
+                    break;
+                default:
+                    break;
+                }
+                memset(buf, 0, 3);
             }
         }
     }
