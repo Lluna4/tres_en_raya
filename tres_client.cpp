@@ -196,12 +196,19 @@ int main()
     int y = 0;
     char *buf = (char *)calloc(3, sizeof(char));
     std::string buff;
-
-    sock = socket(AF_INET, SOCK_STREAM, 0);
     
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock == -1)
+    {
+        std::cout << "ERROR" << std::endl;
+    }
+    std::cout << sock << std::endl;
+    
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_family = AF_INET;
     address.sin_port = htons(PORT);
-    connect(sock, (struct sockaddr*)&address, sizeof(address));
+    int conn = connect(sock, (struct sockaddr*)&address, sizeof(address));
+    std::cout << conn << std::endl;
     recv(sock, buf, 1, 0);
     std::cout << buf << std::endl;
     if (ft_atoi(buf) == 1)
@@ -209,6 +216,7 @@ int main()
         memset(buf, 0, 3);
         std::cout << "Esperando a partida..." << std::endl;
         recv(sock, buf, 1, 0);
+        std::cout << buf << std::endl;
     }
     if (ft_atoi(buf) == 0)
     {

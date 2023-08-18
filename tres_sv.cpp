@@ -151,11 +151,11 @@ int main()
     {
         tabla.push_back({0, 0, 0});
     }
-    std::cout << "Escuchando conexiones" << std::endl;
+    std::cout << "Escuchando conexiones" << "en "<< PORT << std::endl;
     while (true)
     {
-       
-        listen(sock, 100);
+        std::cout << "AAAA" << std::endl;
+        listen(sock, 5);
         int new_socket = accept(sock, (struct sockaddr*)&address, (socklen_t*)&addrlen);
         std::cout << new_socket << std::endl;
         clients.push_back(new_socket);
