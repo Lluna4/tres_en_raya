@@ -88,7 +88,6 @@ void manage_game(std::vector<int> players)
         eval(&x, buf);
         y = buf[1] - 48;
         tabla[y][x] = 1;
-        //memset(buf, 0, 3);
         send(p2, buf, 2, 0);
         int wcondition = check_win(tabla);
         if ( wcondition > 0)

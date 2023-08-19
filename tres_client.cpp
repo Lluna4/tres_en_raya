@@ -232,17 +232,38 @@ int main()
         memset(buf, 0, 3);
         while (true)
         {
+            system("clear");
             print_tabla(tabla);
             memset(buf, 0, 3);
             recv(sock, buf, 1, 0);
+            if (ft_atoi(buf) == 3 || ft_atoi(buf) == 4)
+            {
+                if (ft_atoi(buf) == 3)
+                {
+                    std::cout << "HAS GANADO!" << std::endl;
+                    break;
+                }
+                std::cout << "HAS PERDIDO!" << std::endl;
+                break;
+            }
             std::cout << buf << std::endl;
             if (ft_atoi(buf) == 2)
             {
                 x = 0;
                 y = 0;
                 memset(buf, 0, 3);
-                std::cout << "Elige una posicion donde quieras poner tu marca" << std::endl;
-                std::cin >> buff;
+                
+                while (true)
+                {
+                    std::cout << "Elige una posicion donde quieras poner tu marca: ";
+                    std::cin >> buff;
+                    if (buff[2] != 0 || (buff[1] - 48) > 2 || !(buff[0] >= 'a' && buff[0] <= 'c'))
+                    {
+                        std::cout << "Input invalido" << std::endl;
+                        continue;
+                    }
+                    break;
+                }
                 buf = (char *)buff.c_str();
                 send(sock, buf, 2, 0);
                 switch (buf[0])
