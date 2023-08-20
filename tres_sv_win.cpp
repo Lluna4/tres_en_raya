@@ -14,6 +14,84 @@ std::vector<std::vector<int>> tabla;
 
 int in = 0;
 
+void print_line(std::vector<int> header)
+{
+    for (unsigned int i = 0; i < header.size(); i++)
+    {
+        std::cout << "+";
+        std::cout << "-";
+        for (unsigned int x = 0; x < 1; x++)
+            std::cout << "-";
+        std::cout << "-";
+    }
+    std::cout << "+";
+    std::cout << std::endl;
+}
+
+void print_line(std::vector<int> header, std::vector<int> max)
+{
+    for (unsigned int i = 0; i < header.size(); i++)
+    {
+        std::cout << "+";
+        std::cout << "-";
+        for (int x = 0; x < max[i]; x++)
+            std::cout << "-";
+        std::cout << "-";
+    }
+    std::cout << "+";
+    std::cout << std::endl;
+}
+
+void print_words(std::vector<int> header)
+{
+    char print_value = ' ';
+    for (unsigned int i = 0; i < header.size(); i++)
+    {
+        switch (header[i])
+        {
+        case 0:
+            print_value = ' ';
+            break;
+        
+        case 1:
+            print_value = 'X';
+            break;
+        
+        case 2:
+            print_value = 'O';
+
+        default:
+            break;
+        }
+        std::cout << "|" << " " << print_value << " ";
+    }
+    std::cout << "|";
+    std::cout << std::endl;
+}
+
+void print_words(std::vector<int> header, std::vector<int> max)
+{
+    for (unsigned int i = 0; i < header.size(); i++)
+    {
+        std::cout << "|" << " " << header[i];
+        for (int x = 0; x < (max[i] - (2 - 1)); x++)
+            std::cout << " ";
+    }
+    std::cout << "|";
+    std::cout << std::endl;
+}
+
+void print_tabla(std::vector<std::vector<int>> tabla)
+{
+    print_line(tabla[0]);
+    for (unsigned int y = 0; y < tabla.size(); y++)
+    {
+        print_words(tabla[y]);
+        print_line(tabla[y]);
+    }
+}
+
+
 int check_win(std::vector<std::vector<int>> tabla)
 {
     for(int i = 0; i < 3; i++)
@@ -42,7 +120,7 @@ int check_win(std::vector<std::vector<int>> tabla)
 
 void eval(int *x, char *buf)
 {
-     switch (buf[0])
+    switch (buf[0])
     {
     case 'a':
         *x = 0;
@@ -63,6 +141,11 @@ void eval(int *x, char *buf)
 
 void manage_game(std::vector<SOCKET> players)
 {
+    //generar tabla
+    for(int i = 0; i < 3; i++)
+    {
+        tabla.push_back({0, 0, 0});
+    }
     send(players[0], "0", 1, 0);
     send(players[1], "0", 1, 0);
     char *buf = (char *)calloc(3, sizeof(char));
@@ -78,6 +161,7 @@ void manage_game(std::vector<SOCKET> players)
 
     while (true)
     {
+        print_tabla(tabla);
         p1 = players[in1];
         p2 = players[in2];
         send(p1, "2", 1, 0);
@@ -86,7 +170,7 @@ void manage_game(std::vector<SOCKET> players)
 
         eval(&x, buf);
         y = buf[1] - 48;
-        tabla[y][x] = 1;
+        tabla[y][x] = in1 + 1;
         send(p2, buf, 2, 0);
         int wcondition = check_win(tabla);
         if ( wcondition > 0)
@@ -125,6 +209,7 @@ void manage_server(SOCKET socket)
     }
     else
     {
+        //std::cout<< "S" << std::endl;
         in += 2;
         std::vector<SOCKET> players = {clients[in-2], clients[in-1]};
         std::thread game(manage_game, players);
@@ -154,11 +239,6 @@ int main()
     if (bind(sock, (struct sockaddr*)&address, sizeof(address)) < 0)
     {
         std::cout << "Bind ha fallado" << std::endl;
-    }
-
-    for(int i = 0; i < 3; i++)
-    {
-        tabla.push_back({0, 0, 0});
     }
     std::cout << "Escuchando conexiones" << "en "<< PORT << std::endl;
     while (true)
