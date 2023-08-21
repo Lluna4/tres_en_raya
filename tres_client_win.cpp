@@ -184,6 +184,37 @@ void bot_play(std::vector<std::vector<int>> &tabla)
     }
 }*/
 
+int check_tabla(std::string buf, std::vector<std::vector<int>> tabla)
+{
+    int x = 0;
+    int y = 0;
+
+    switch (buf[0])
+    {
+    case 'a':
+        x = 0;
+        break;
+    
+    case 'b':
+        x = 1;
+        break;
+    
+    case 'c':
+        x = 2;
+        break;
+    
+    default:
+        break;
+    }
+    y = buf[1] - 48;
+
+    if (tabla[y][x] != 0)
+    {
+        return 1;
+    }
+    
+    return 0;
+}
 
 
 int main()
@@ -262,7 +293,7 @@ int main()
                 {
                     std::cout << "Elige una posicion donde quieras poner tu marca: ";
                     std::cin >> buff;
-                    if (buff[2] != 0 || (buff[1] - 48) > 2 || !(buff[0] >= 'a' && buff[0] <= 'c'))
+                    if (buff[2] != 0 || (buff[1] - 48) > 2 || !(buff[0] >= 'a' && buff[0] <= 'c') || check_tabla(buff, tabla) == 1)
                     {
                         std::cout << "Input invalido" << std::endl;
                         continue;
@@ -328,48 +359,8 @@ int main()
             }
         }
     }
-
-
-    /*for(int i = 0; i < 3; i++)
-    {
-        tabla.push_back({0, 0, 0});
-    }
-    while (playing == true)
-    {
-        //x = 0;
-        //y = 0;
-        system("clear");
-        print_tabla(tabla);
-        std::cout << "Elige una posicion donde quieras poner tu marca (tienes la x): ";
-        std::cin >> buf;
-        switch (buf[0])
-        {
-        case 'a':
-            x = 0;
-            break;
-        
-        case 'b':
-            x = 1;
-            break;
-        
-        case 'c':
-            x = 2;
-            break;
-        
-        default:
-            break;
-        }
-        y = buf[1] - 48;
-        tabla[y][x] = 1;
-        bot_play(tabla);
-
-        int wcondition = check_win(tabla);
-        if ( wcondition > 0)
-        {
-            system("clear");
-            print_tabla(tabla);
-            std::cout << "HA GANADO " << wcondition << std::endl;
-            break;
-        }
-    }*/
+    std::cout << "Pulsa enter para salir...";
+    std::cin >> buf;
+    
+    return 0;
 }
